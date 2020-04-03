@@ -16,7 +16,12 @@ public class Utility {
 	 * parseEmployee takes a string with employee details as input parameter and parses it in to an Employee Object 
 	*/
 	public static Employee parseEmployee(String employeeDetail) {
+		if((employeeDetail!=null) && (!employeeDetail.isBlank())) {
+			String[] input = employeeDetail.split(",");
+			return new Employee(Integer.parseInt(input[0]), input[1], input[2]);
+		}
 		return null;
+		
 	}
 
 	/*

@@ -1,8 +1,13 @@
 package com.learn.issuetracker.repository;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.learn.issuetracker.model.Employee;
 
@@ -11,7 +16,7 @@ import com.learn.issuetracker.model.Employee;
  * Java 8 NIO should be used to read the file data in to streams 
 */
 public class EmployeeRepository {
-
+	
 	/*
 	 * This List will store the employee details read from the file
 	 */
@@ -23,7 +28,8 @@ public class EmployeeRepository {
 	 * employees.csv file is "src --> data -> employees.csv"
 	 */
 	static {
-
+		Path employeesfilePath = Paths.get("src", "data", "employees.csv");
+		EmployeeRepository.initializeEmployeesFromFile(employeesfilePath);
 	}
 
 	/*
@@ -33,7 +39,11 @@ public class EmployeeRepository {
 	 * converting the line read from the file in to Employee Object
 	 */
 	public static void initializeEmployeesFromFile(Path employeesfilePath) {
-
+		try (Stream<String> bufferData = Files.newBufferedReader(employeesfilePath).lines()) {
+			employees = bufferData.map(Utility::parseEmployee).collect(Collectors.toList());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/*
@@ -41,7 +51,8 @@ public class EmployeeRepository {
 	 * employee Id, and return the employee found, in an Optional<Employee> object
 	 */
 	public static Optional<Employee> getEmployee(int empId) {
-		return null;
+		return employees.stream().filter(f -> f.getEmplId()==empId)
+				.findAny();
 	}
 
 	// Getter

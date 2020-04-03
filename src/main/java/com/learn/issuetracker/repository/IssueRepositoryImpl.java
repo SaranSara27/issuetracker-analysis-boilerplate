@@ -1,6 +1,7 @@
 package com.learn.issuetracker.repository;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import com.learn.issuetracker.model.Issue;
@@ -28,7 +29,8 @@ public class IssueRepositoryImpl implements IssueRepository {
 	 *
 	 */
 	public IssueRepositoryImpl(Path issuesFilePath) {
-
+		issuesFilePath=Paths.get("src", "data", "issues.csv");
+		initializeIssuesFromFile();
 	}
 
 	/*
