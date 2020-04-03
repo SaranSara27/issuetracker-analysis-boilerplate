@@ -2,10 +2,14 @@ package com.learn.issuetracker.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.learn.issuetracker.exceptions.IssueNotFoundException;
 import com.learn.issuetracker.model.Employee;
@@ -67,7 +71,19 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 
 	@Override
 	public Issue getIssueById(String issueId) throws IssueNotFoundException {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return null;
+		}
+		else {
+			Optional<Issue> issue=issuesList.stream().filter(i->i.getIssueId().equals(issueId)).findAny();
+			if (issue.isPresent()) {
+				return issue.get();
+			}
+			else {
+				throw new IssueNotFoundException();
+			}
+		}
 	}
 
 	/*
@@ -78,7 +94,19 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public Optional<Employee> getIssueAssignedTo(String issueId) {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return Optional.empty();
+		}
+		else {
+			Optional<Issue> issue=issuesList.stream().filter(i->i.getIssueId().equals(issueId)).findAny();
+			if (issue.isPresent() && issue.get().getAssignedTo()!=null) {
+				return Optional.of(issue.get().getAssignedTo());
+			}
+			else {
+				return Optional.empty();
+			}
+		}
 	}
 
 	/*
@@ -87,7 +115,13 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public List<Issue> getIssuesByStatus(String status) {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return new ArrayList<>() ;
+		}
+		else {
+			return issuesList.stream().filter(i->i.getStatus().equals(status)).collect(Collectors.toList());
+		}
 	}
 
 	/*
@@ -96,7 +130,17 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public Set<String> getOpenIssuesInExpectedResolutionOrder() {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return new LinkedHashSet<>() ;
+		}
+		else {
+			return issuesList.stream().filter(t->t.getStatus().equals("OPEN"))
+			.sorted((s1,s2)->s1.getExpectedResolutionOn().compareTo(s2.getExpectedResolutionOn()))
+			.map(Issue::getIssueId)
+			.collect(Collectors.toCollection(LinkedHashSet::new));
+		}
+		
 	}
 
 	/*
@@ -105,7 +149,21 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public List<Issue> getOpenIssuesOrderedByPriorityAndResolutionDate() {
-		return null;
+		
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return new ArrayList<>() ;
+		}
+		else {
+			
+			return issuesList.stream().filter(t->t.getStatus().equals("OPEN"))
+			.sorted(Comparator.
+					comparing(Issue::getPriority).reversed()
+					.thenComparing(Issue::getExpectedResolutionOn)
+					)
+			.collect(Collectors.toList());
+		}
+		
 	}
 
 	/*
