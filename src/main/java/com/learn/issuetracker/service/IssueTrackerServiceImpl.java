@@ -1,6 +1,7 @@
 package com.learn.issuetracker.service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +38,8 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 * value in CURRENT_DATE variable
 	 */
 	public IssueTrackerServiceImpl(IssueRepository issueDao) {
-
+		this.issueDao=issueDao;
+		this.today=LocalDate.parse(IssueTrackerServiceImpl.CURRENT_DATE, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 	}
 
 	/*
@@ -49,7 +51,13 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public long getClosedIssueCount() {
-		return 0;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return 0;
+		}
+		else {
+			return issuesList.stream().filter(i->i.getStatus().equals("CLOSED")).count();
+		}
 	}
 
 	/*
