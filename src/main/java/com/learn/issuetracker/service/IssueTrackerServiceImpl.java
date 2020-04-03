@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import java.time.temporal.ChronoUnit;
 import com.learn.issuetracker.exceptions.IssueNotFoundException;
 import com.learn.issuetracker.model.Employee;
 import com.learn.issuetracker.model.Issue;
@@ -173,7 +173,18 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public List<String> getOpenIssuesDelayedbyEmployees() {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return new ArrayList<>() ;
+		}
+		else {
+			return issuesList.stream()
+				.filter(i->i.getStatus().equals("OPEN"))
+				.filter(i->ChronoUnit.DAYS.between(i.getExpectedResolutionOn(),today)>7)
+				.distinct()
+				.map(i->i.getAssignedTo().getName())
+				.collect(Collectors.toList());
+		}
 	}
 
 	/*
@@ -259,6 +270,17 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public Map<String, Long> getHighMediumOpenIssueDuration() {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return null ;
+		}
+		else {
+			
+			return issuesList.stream()
+					.filter(i->i.getStatus().equals("OPEN"))
+					.filter(i->(i.getPriority().equals("HIGH") || i.getPriority().equals("MEDIUM")))
+					.collect(Collectors.toMap(Issue::getIssueId, i->ChronoUnit.DAYS.between(i.getCreatedOn(),today)));
+			
+		}
 	}
 }
