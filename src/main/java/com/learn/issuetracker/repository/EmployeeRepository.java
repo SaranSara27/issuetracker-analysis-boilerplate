@@ -42,7 +42,6 @@ public class EmployeeRepository {
 		try (Stream<String> bufferData = Files.newBufferedReader(employeesfilePath).lines()) {
 			employees = bufferData.map(Utility::parseEmployee).collect(Collectors.toList());
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

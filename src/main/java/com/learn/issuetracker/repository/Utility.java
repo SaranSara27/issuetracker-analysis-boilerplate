@@ -1,5 +1,9 @@
 package com.learn.issuetracker.repository;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
 import com.learn.issuetracker.model.Employee;
 import com.learn.issuetracker.model.Issue;
 
@@ -31,6 +35,21 @@ public class Utility {
 	*/
 
 	public static Issue parseIssue(String issueDetail) {
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		if((issueDetail!=null) && (!issueDetail.isBlank())) {
+			String[] input = issueDetail.split(",");
+			Optional<Employee> employee=EmployeeRepository.getEmployee(Integer.parseInt(input[6]));
+			Employee emp;
+			if(employee.isPresent()){
+				emp = employee.get();
+			}
+			else {
+				emp = null;
+			}
+			return new Issue(input[0], input[1],LocalDate.parse(input[2], format), LocalDate.parse(input[3], format), input[4], input[5], emp);
+		}
 		return null;
 	}
+	
+	
 }
