@@ -183,7 +183,16 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public Map<String, Integer> getHighPriorityOpenIssueAssignedTo() {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return null ;
+		}
+		else {
+			return issuesList.stream()
+			.filter(i->i.getStatus().equals("OPEN"))
+			.filter(i->i.getPriority().equals("HIGH"))
+			.collect(Collectors.toMap(Issue::getIssueId, t->t.getAssignedTo().getEmplId()));
+		}
 	}
 
 	/*
@@ -192,7 +201,17 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public Map<String, List<Issue>> getOpenIssuesGroupedbyPriority() {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return null ;
+		}
+		else {
+			
+			return issuesList.stream()
+					.filter(i->i.getStatus().equals("OPEN"))
+					.collect(Collectors.groupingBy(Issue::getPriority));
+			
+		}
 	}
 
 	/*
@@ -201,7 +220,17 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public Map<String, Long> getOpenIssuesCountGroupedbyPriority() {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return null ;
+		}
+		else {
+			
+			return issuesList.stream()
+					.filter(i->i.getStatus().equals("OPEN"))
+					.collect(Collectors.groupingBy(Issue::getPriority,Collectors.counting()));
+			
+		}
 	}
 	
 	/*
@@ -211,7 +240,15 @@ public class IssueTrackerServiceImpl implements IssueTrackerService {
 	 */
 	@Override
 	public Map<String, List<String>> getOpenIssueIdGroupedbyLocation() {
-		return null;
+		List<Issue> issuesList=issueDao.getIssues();
+		if(issuesList==null || issuesList.isEmpty()) {
+			return null ;
+		}
+		else {
+			return issuesList.stream().filter(i->i.getStatus().equals("OPEN")).collect(Collectors.groupingBy(
+							i -> i.getAssignedTo().getLocation(), Collectors.mapping(Issue::getIssueId, Collectors.toList())));
+			
+		}
 	}
 	
 	/*
